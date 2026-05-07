@@ -10,6 +10,7 @@ pub struct Player {
     pub velocity: (f32, f32),
     pub color: PrimitiveStyle<Rgb888>,
     pub input: (Vinput, Hinput),
+    pub timer: i32;
 }
 impl Player {
     pub fn draw(&self, display: &mut SimulatorDisplay<Rgb888>) {

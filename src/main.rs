@@ -28,12 +28,11 @@ fn main() -> Result<(), core::convert::Infallible> {
         input: (player::Vinput::NONE, player::Hinput::NONE),
         position: Point { x: 500, y: 300 },
         velocity: (0.0, 0.0),
+        timer: 0,
     };
 
     window.update(&mut display);
     'running: loop {
-        let mut update = false;
-        // TODO: Add some timer to the player
         for event in window.events() {
             match event {
                 SimulatorEvent::Quit => break 'running,
@@ -42,39 +41,33 @@ fn main() -> Result<(), core::convert::Infallible> {
                     ..
                 } => {
                     player.input.0 = player::Vinput::UP;
-                    update = true;
                 }
                 SimulatorEvent::KeyDown {
                     keycode: Keycode::S,
                     ..
                 } => {
                     player.input.0 = player::Vinput::DOWN;
-                    update = true;
                 }
                 SimulatorEvent::KeyDown {
                     keycode: Keycode::A,
                     ..
                 } => {
                     player.input.1 = player::Hinput::LEFT;
-                    update = true;
                 }
                 SimulatorEvent::KeyDown {
                     keycode: Keycode::D,
                     ..
                 } => {
                     player.input.1 = player::Hinput::RIGHT;
-                    update = true;
                 }
                 _ => {}
             }
         }
 
-        if update {
-            display.clear(Rgb888::BLACK).unwrap();
-            player_methods(&mut player, &mut display);
-            window.update(&mut display);
-        }
-
+        display.clear(Rgb888::BLACK).unwrap();
+        player_methods(&mut player, &mut display);
+        // window update must be the last thing
+        window.update(&mut display);
         thread::sleep(Duration::from_millis(10));
     }
 
@@ -85,4 +78,7 @@ fn player_methods(player: &mut player::Player, display: &mut SimulatorDisplay<Rg
     player.move_player();
     player.update_velocites();
     player.draw(display);
+    if player.timer > 0 {
+        player.timer -= 1;
+    }
 }
