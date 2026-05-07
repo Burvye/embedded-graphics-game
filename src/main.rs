@@ -12,6 +12,7 @@ use embedded_graphics_simulator::sdl2::Keycode;
 
 fn main() -> Result<(), core::convert::Infallible> {
     println!("Hello, world!");
+
     let mut display = SimulatorDisplay::<Rgb888>::new(Size::new(1000, 600));
     let output_settings = OutputSettingsBuilder::new().scale(1).build();
     let mut window = Window::new("embedded graphics window", &output_settings);
@@ -20,15 +21,16 @@ fn main() -> Result<(), core::convert::Infallible> {
         .stroke_color(Rgb888::CSS_DARK_ORANGE)
         .fill_color(Rgb888::CSS_ORANGE)
         .build();
-
+    let mut positions: Vec<Point> = Vec::new();
     let mut player = player::Player {
         color: red_style,
-        input: (player::Vinput::NONE, player::Hinput::NONE),
+        input: (player::Hinput::NONE, player::Vinput::NONE),
         position: Point { x: 500, y: 300 },
-        velocity: (0.0, 0.0),
-        timer: 0,
+        velocity: (0, 0),
     };
 
+    positions.push(player.position);
+    screen_wrap(&mut positions, display.size());
     window.update(&mut display);
     'running: loop {
         for event in window.events() {
@@ -38,25 +40,25 @@ fn main() -> Result<(), core::convert::Infallible> {
                     keycode: Keycode::W,
                     ..
                 } => {
-                    player.input.0 = player::Vinput::UP;
+                    player.input.1 = player::Vinput::UP;
                 }
                 SimulatorEvent::KeyDown {
                     keycode: Keycode::S,
                     ..
                 } => {
-                    player.input.0 = player::Vinput::DOWN;
+                    player.input.1 = player::Vinput::DOWN;
                 }
                 SimulatorEvent::KeyDown {
                     keycode: Keycode::A,
                     ..
                 } => {
-                    player.input.1 = player::Hinput::LEFT;
+                    player.input.0 = player::Hinput::LEFT;
                 }
                 SimulatorEvent::KeyDown {
                     keycode: Keycode::D,
                     ..
                 } => {
-                    player.input.1 = player::Hinput::RIGHT;
+                    player.input.0 = player::Hinput::RIGHT;
                 }
                 _ => {}
             }
@@ -76,7 +78,21 @@ fn player_methods(player: &mut player::Player, display: &mut SimulatorDisplay<Rg
     move_player(player);
     update_velocites(player);
     draw(player, display);
-    if player.timer > 0 {
-        player.timer -= 1;
+}
+
+fn screen_wrap(positions: &mut Vec<Point>, border: Size) {
+    for position in positions {
+        if position.x > border.width as i32 {
+            position.x = 0
+        }
+        if position.y > border.height as i32 {
+            position.y = 0
+        }
+        if position.x < 0 {
+            position.x = border.width as i32
+        }
+        if position.y < 0 {
+            position.y = border.height as i32
+        }
     }
 }
