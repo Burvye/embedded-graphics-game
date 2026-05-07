@@ -1,0 +1,88 @@
+use embedded_graphics::pixelcolor::{PixelColor, Rgb888};
+use embedded_graphics::prelude::*;
+use embedded_graphics::primitives::{Circle, Line, PrimitiveStyle, PrimitiveStyleBuilder};
+use embedded_graphics_simulator::{
+    OutputSettingsBuilder, SimulatorDisplay, SimulatorEvent, Window,
+};
+use std::thread;
+use std::time::Duration;
+pub mod player;
+
+use embedded_graphics_simulator::sdl2::Keycode;
+use embedded_graphics_simulator::sdl2::Mod;
+
+use std::f32::consts::PI;
+fn main() -> Result<(), core::convert::Infallible> {
+    println!("Hello, world!");
+    let mut display = SimulatorDisplay::<Rgb888>::new(Size::new(1000, 600));
+    let output_settings = OutputSettingsBuilder::new().scale(1).build();
+    let mut window = Window::new("embedded graphics window", &output_settings);
+    let red_style = PrimitiveStyleBuilder::new()
+        .stroke_width(1)
+        .stroke_color(Rgb888::CSS_DARK_ORANGE)
+        .fill_color(Rgb888::CSS_ORANGE)
+        .build();
+
+    let mut player = player::Player {
+        color: red_style,
+        input: (player::Vinput::NONE, player::Hinput::NONE),
+        position: Point { x: 500, y: 300 },
+        velocity: (0.0, 0.0),
+    };
+
+    window.update(&mut display);
+    'running: loop {
+        let mut update = false;
+        // TODO: Add some timer to the player
+        for event in window.events() {
+            match event {
+                SimulatorEvent::Quit => break 'running,
+                SimulatorEvent::KeyDown {
+                    keycode: Keycode::W,
+                    ..
+                } => {
+                    player.input.0 = player::Vinput::UP;
+                    update = true;
+                }
+                SimulatorEvent::KeyDown {
+                    keycode: Keycode::S,
+                    ..
+                } => {
+                    player.input.0 = player::Vinput::DOWN;
+                    update = true;
+                }
+                SimulatorEvent::KeyDown {
+                    keycode: Keycode::A,
+                    ..
+                } => {
+                    player.input.1 = player::Hinput::LEFT;
+                    update = true;
+                }
+                SimulatorEvent::KeyDown {
+                    keycode: Keycode::D,
+                    ..
+                } => {
+                    player.input.1 = player::Hinput::RIGHT;
+                    update = true;
+                }
+                _ => {}
+            }
+        }
+
+        if update {
+            display.clear(Rgb888::BLACK).unwrap();
+            player_methods(&mut player, &mut display);
+            window.update(&mut display);
+        }
+
+        thread::sleep(Duration::from_millis(10));
+    }
+
+    Ok(())
+}
+
+fn player_methods(player: &mut player::Player, display: &mut SimulatorDisplay<Rgb888>) {
+    player.move_player();
+    player.update_velocites();
+    player.draw(display);
+}
