@@ -24,22 +24,22 @@ impl Player {
     pub fn move_player(&mut self) {
         match self.input.0 {
             Vinput::UP => {
-                self.velocity.y -= 5;
+                self.velocity.0 = 5.0;
                 self.input.0 = Vinput::NONE
             }
             Vinput::DOWN => {
-                self.velocity.y += 5;
+                self.velocity.0 = 5.0;
                 self.input.0 = Vinput::NONE
             }
             _ => {}
         }
         match self.input.1 {
             Hinput::LEFT => {
-                self.velocity.x -= 5;
+                self.velocity.1 = 5.0;
                 self.input.1 = Hinput::NONE;
             }
             Hinput::RIGHT => {
-                self.velocity.x += 5;
+                self.velocity.1 = 5.0;
                 self.input.1 = Hinput::NONE;
             }
             _ => {}
