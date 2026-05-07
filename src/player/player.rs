@@ -12,39 +12,37 @@ pub struct Player {
     pub input: (Vinput, Hinput),
     pub timer: i32,
 }
-impl Player {
-    pub fn draw(&self, display: &mut SimulatorDisplay<Rgb888>) {
-        Circle::new(Point::new(self.position.x, self.position.y), 10)
-            .into_styled(self.color)
-            .draw(display);
-    }
-    // TODO: Finish this velocites function
-    pub fn update_velocites(&mut self) {
-        if self.velocity.0 > 0.0 {}
-    }
-    pub fn move_player(&mut self) {
-        match self.input.0 {
-            Vinput::UP => {
-                self.velocity.0 = 5.0;
-                self.input.0 = Vinput::NONE
-            }
-            Vinput::DOWN => {
-                self.velocity.0 = 5.0;
-                self.input.0 = Vinput::NONE
-            }
-            _ => {}
+pub fn draw(player: &Player, display: &mut SimulatorDisplay<Rgb888>) {
+    Circle::new(Point::new(player.position.x, player.position.y), 10)
+        .into_styled(player.color)
+        .draw(display);
+}
+// TODO: Finish this velocites function
+pub fn update_velocites(player: &mut Player) {
+    if player.velocity.0 > 0.0 {}
+}
+pub fn move_player(player: &mut Player) {
+    match player.input.0 {
+        Vinput::UP => {
+            player.velocity.0 = 5.0;
+            player.input.0 = Vinput::NONE
         }
-        match self.input.1 {
-            Hinput::LEFT => {
-                self.velocity.1 = 5.0;
-                self.input.1 = Hinput::NONE;
-            }
-            Hinput::RIGHT => {
-                self.velocity.1 = 5.0;
-                self.input.1 = Hinput::NONE;
-            }
-            _ => {}
+        Vinput::DOWN => {
+            player.velocity.0 = 5.0;
+            player.input.0 = Vinput::NONE
         }
+        _ => {}
+    }
+    match player.input.1 {
+        Hinput::LEFT => {
+            player.velocity.1 = 5.0;
+            player.input.1 = Hinput::NONE;
+        }
+        Hinput::RIGHT => {
+            player.velocity.1 = 5.0;
+            player.input.1 = Hinput::NONE;
+        }
+        _ => {}
     }
 }
 

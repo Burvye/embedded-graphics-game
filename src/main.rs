@@ -7,11 +7,9 @@ use embedded_graphics_simulator::{
 use std::thread;
 use std::time::Duration;
 pub mod player;
-
+use crate::player::player::{draw, move_player, update_velocites};
 use embedded_graphics_simulator::sdl2::Keycode;
-use embedded_graphics_simulator::sdl2::Mod;
 
-use std::f32::consts::PI;
 fn main() -> Result<(), core::convert::Infallible> {
     println!("Hello, world!");
     let mut display = SimulatorDisplay::<Rgb888>::new(Size::new(1000, 600));
@@ -75,9 +73,9 @@ fn main() -> Result<(), core::convert::Infallible> {
 }
 
 fn player_methods(player: &mut player::Player, display: &mut SimulatorDisplay<Rgb888>) {
-    player.move_player();
-    player.update_velocites();
-    player.draw(display);
+    move_player(player);
+    update_velocites(player);
+    draw(player, display);
     if player.timer > 0 {
         player.timer -= 1;
     }
